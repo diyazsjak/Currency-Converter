@@ -14,9 +14,6 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 {
 	this->RESTClient->BaseURL = "https://v6.exchangerate-api.com/v6/" + this->API_KEY;
 
-	// display how many requests left and day of request refresh
-	//this->DisplayQuotaInfo();
-
 	if (!FileExists("Currency-Codes.json")) {
 		// fetch currencies into json file
 		this->WriteCurrencyCodesFile();
@@ -27,32 +24,6 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 
 	this->CurrencyName1->ItemIndex = 0;
 	this->CurrencyName2->ItemIndex = 0;
-}
-//---------------------------------------------------------------------------
-void TForm1::DisplayQuotaInfo()
-{
-	/*
-	* Fetch quota status of my API and display how many requests left and what
-	* day of month will my requests refresh.
-	*/
-	this->RESTRequest->Resource = "quota";
-	this->RESTRequest->Execute();
-
-	TJSONValue *Response = this->RESTResponse->JSONValue;
-
-    if (Response->FindValue("result")->Value() == "success")
-	{
-		TJSONValue *Remaining = Response->FindValue("requests_remaining");
-		TJSONValue *DayOfRefresh = Response->FindValue("refresh_day_of_month");
-
-		this->RemainingRequestsLbl->Caption += Remaining->Value();
-		this->DayOfRefreshlbl->Caption += DayOfRefresh->Value();
-    }
-	else
-	{
-		TJSONValue *Error = Response->FindValue("error-type");
-		this->ErrorLbl->Caption = this->ErrorMessage(Error->Value());
-	}
 }
 //---------------------------------------------------------------------------
 void TForm1::WriteCurrencyCodesFile()
@@ -169,3 +140,35 @@ AnsiString TForm1::ErrorMessage(AnsiString ErrorType)
 	}
 }
 //---------------------------------------------------------------------------
+void __fastcall TForm1::InfoImgBtnClick(TObject *Sender)
+{
+	/*
+	* Fetch quota status of my API and display in ShowMessage how many requests
+	* are left and on what day of month my requests will be updated.
+	*/
+	this->RESTRequest->Resource = "quota";
+	this->RESTRequest->Execute();
+
+	TJSONValue *Response = this->RESTResponse->JSONValue;
+
+	AnsiString AboutApi =
+		"Ёто приложение использует сервис www.exchangerate-api.com, "
+		"который предоставл€ет информацию о валютах. Cервис предоставл€ет "
+		"1500 запросов в мес€ц (бесплатный план).\n\n";
+
+    if (Response->FindValue("result")->Value() == "success")
+	{
+		TJSONValue *Remaining = Response->FindValue("requests_remaining");
+		TJSONValue *DayOfRefresh = Response->FindValue("refresh_day_of_month");
+
+		ShowMessage(AboutApi + "ќсталось запросов: " + Remaining->Value() + ".\n" +
+					"ƒень обновлени€ запросов: " + DayOfRefresh->Value() + ".");
+	}
+	else
+	{
+		TJSONValue *Error = Response->FindValue("error-type");
+		ShowMessage(AboutApi + Error->Value());
+    }
+}
+//---------------------------------------------------------------------------
+

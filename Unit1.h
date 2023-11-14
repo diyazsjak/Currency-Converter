@@ -12,6 +12,8 @@
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Dialogs.hpp>
 #include <Vcl.ExtDlgs.hpp>
+#include <Vcl.ExtCtrls.hpp>
+#include <Vcl.Imaging.pngimage.hpp>
 
 #include <unordered_map>
 //---------------------------------------------------------------------------
@@ -21,24 +23,23 @@ __published:	// IDE-managed Components
 	TRESTClient *RESTClient;
 	TRESTRequest *RESTRequest;
 	TRESTResponse *RESTResponse;
-	TLabel *RemainingRequestsLbl;
 	TComboBox *CurrencyName1;
 	TButton *ConvertBtn;
 	TEdit *CurrencyAmount;
 	TComboBox *CurrencyName2;
-	TLabel *DayOfRefreshlbl;
 	TLabel *Label1;
 	TLabel *Label2;
 	TLabel *Label3;
 	TEdit *ConvertedCurrency;
 	TLabel *Label4;
 	TLabel *ErrorLbl;
+	TImage *InfoImgBtn;
 	void __fastcall ConvertBtnClick(TObject *Sender);
+	void __fastcall InfoImgBtnClick(TObject *Sender);
 private:
 	// https://app.exchangerate-api.com
 	const AnsiString API_KEY = "df440d89b3575cc5a09969fd";
 
-	void DisplayQuotaInfo();
 	void WriteCurrencyCodesFile();
 	void LoadCurrencyCodesAndNames();
     AnsiString ErrorMessage(AnsiString ErrorType);
